@@ -7,7 +7,6 @@ using System.IO;
 using System.Management.Automation.Internal;
 using System.Management.Automation.Language;
 using System.Reflection;
-using System.Runtime.InteropServices;
 using System.Runtime.Loader;
 using System.Security;
 using System.Text;
@@ -113,7 +112,7 @@ namespace System.Management.Automation
 #if UNIX
                 s_oemEncoding = new UTF8Encoding(false);
 #else
-                uint oemCp = NativeMethods.GetOEMCP();
+                uint oemCp = Interop.Windows.GetOEMCP();
                 s_oemEncoding = Encoding.GetEncoding((int)oemCp);
 #endif
             }
@@ -362,17 +361,5 @@ namespace System.Management.Automation
         }
 
         #endregion Misc
-
-        /// <summary>
-        /// Native methods that are used by facade methods.
-        /// </summary>
-        private static class NativeMethods
-        {
-            /// <summary>
-            /// Pinvoke for GetOEMCP to get the OEM code page.
-            /// </summary>
-            [DllImport(PinvokeDllNames.GetOEMCPDllName, SetLastError = false, CharSet = CharSet.Unicode)]
-            internal static extern uint GetOEMCP();
-        }
     }
 }

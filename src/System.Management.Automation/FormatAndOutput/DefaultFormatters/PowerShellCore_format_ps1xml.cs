@@ -1000,8 +1000,12 @@ namespace System.Management.Automation.Runspaces
                                     if (@('NativeCommandErrorMessage','NativeCommandError') -notcontains $_.FullyQualifiedErrorId -and @('CategoryView','ConciseView','DetailedView') -notcontains $ErrorView)
                                     {
                                         $myinv = $_.InvocationInfo
-                                        if ($myinv -and $myinv.MyCommand)
-                                        {
+                                        $errorColor = ''
+                                        if ($Host.UI.SupportsVirtualTerminal) {
+                                            $errorColor = $PSStyle.Formatting.Error
+                                        }
+
+                                        $commandPrefix = if ($myinv -and $myinv.MyCommand) {
                                             switch -regex ( $myinv.MyCommand.CommandType )
                                             {
                                                 ([System.Management.Automation.CommandTypes]::ExternalScript)
@@ -1045,6 +1049,11 @@ namespace System.Management.Automation.Runspaces
                                         {
                                             $myinv.InvocationName + ' : '
                                         }
+                                    }
+
+                                    if ($commandPrefix)
+                                    {
+                                        $errorColor + $commandPrefix
                                     }
                                 ")
                         .AddScriptBlockExpressionBinding(@"
@@ -2018,6 +2027,8 @@ namespace System.Management.Automation.Runspaces
                         .AddItemScriptBlock(@"""$($_.Blink)$($_.Blink.Replace(""""`e"""",'`e'))$($_.Reset)""", label: "Blink")
                         .AddItemScriptBlock(@"""$($_.BoldOff)$($_.BoldOff.Replace(""""`e"""",'`e'))$($_.Reset)""", label: "BoldOff")
                         .AddItemScriptBlock(@"""$($_.Bold)$($_.Bold.Replace(""""`e"""",'`e'))$($_.Reset)""", label: "Bold")
+                        .AddItemScriptBlock(@"""$($_.DimOff)$($_.DimOff.Replace(""""`e"""",'`e'))$($_.Reset)""", label: "DimOff")
+                        .AddItemScriptBlock(@"""$($_.Dim)$($_.Dim.Replace(""""`e"""",'`e'))$($_.Reset)""", label: "Dim")
                         .AddItemScriptBlock(@"""$($_.Hidden)$($_.Hidden.Replace(""""`e"""",'`e'))$($_.Reset)""", label: "Hidden")
                         .AddItemScriptBlock(@"""$($_.HiddenOff)$($_.HiddenOff.Replace(""""`e"""",'`e'))$($_.Reset)""", label: "HiddenOff")
                         .AddItemScriptBlock(@"""$($_.Reverse)$($_.Reverse.Replace(""""`e"""",'`e'))$($_.Reset)""", label: "Reverse")
